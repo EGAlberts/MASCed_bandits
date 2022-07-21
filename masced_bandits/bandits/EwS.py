@@ -1,29 +1,19 @@
 import numpy as np
-from random import sample
-from masced_bandits.bandit_options import bandit_args
-from masced_bandits.utilities import convert_conf, save_to_pickle, calculate_utility
 from masced_bandits.bandits.Bandit import Bandit
 from masced_bandits.bandits.Expert import Expert
-from statistics import mean
 
-
-#ETA = 1
 CUM_REWARD = 0
 N_K = 1
 
 class EwS(Bandit, Expert):
-    def __init__(self, formula): 
-        super().__init__("EwS-" + formula)
+    def __init__(self, **kwargs): 
+        super().__init__("EwS")
         self.weights, self.distribution = self.ews_initialize(len(self.arms))
         self.num_arms = len(self.arms)
 
-
-        self.set_functions(formula)
-        #np.random.seed(1337)
         self.arm_reward_pairs = {}
         for arm in self.arms: self.arm_reward_pairs[arm] = [0.0,0.0]
-        
-        self.last_action = bandit_args["initial_configuration"]
+
         self.distr_func()
 
            
@@ -31,16 +21,12 @@ class EwS(Bandit, Expert):
         return [0] * num_arms, []
 
 
-    def start_strategy(self, reward):
+    def get_next_arm(self, reward):
 
         self.arm_reward_pairs[self.last_action][CUM_REWARD]+=reward
         self.arm_reward_pairs[self.last_action][N_K]+=1
 
-
-
-        
         self.update_func() #Update weights
-
 
         self.distr_func() #(re-)calculate Pt
 

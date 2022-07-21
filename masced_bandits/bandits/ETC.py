@@ -7,52 +7,35 @@ from masced_bandits.bandits.Bandit import Bandit
 
 
 
-REWARD = 0
-ACTION = 1
+CUM_REWARD = 0
+N_K = 1
 class ETC(Bandit):
     def __init__(self, **kwargs):
         super().__init__("ETC")
-        #self.formula = self.formula_to_function(formula)
 
-        initial_configuration = bandit_args["initial_configuration"]
         self.bandit_round = 0
-        self.game_list = []
-        self.last_action = initial_configuration
-        self.explore_factor = float(kwargs['exploration_rounds'])
 
-    def start_strategy(self, reward):
-        self.bandit_round = self.bandit_round + 1
+        self.explore_factor = float(kwargs.get('exploration_rounds',10))
 
-        self.game_list.append([reward, self.last_action])
+        self.arm_reward_pairs = {}
+        for arm in self.arms: self.arm_reward_pairs[arm] = [0.0,0.0]
 
+    def get_next_arm(self, reward):
+        self.bandit_round+=1
+        self.arm_reward_pairs[self.last_action][CUM_REWARD]+=reward
+        self.arm_reward_pairs[self.last_action][N_K]+=1
 
         if  self.bandit_round <= ((len(self.arms)-1) * self.explore_factor):
             new_action = self.arms[(self.bandit_round % len(self.arms))]
         else: 
             new_action = max(self.arms, key=lambda arm: self.reward_average(arm))
 
-
-
         self.last_action = new_action
         return new_action
 
 
     def reward_average(self, arm):
-        r_sum = 0
-
-        for game in self.game_list:  
-            if(game[ACTION] == arm): #the games in which arm was chosen
-                r_sum+=game[REWARD]
-     
-        times_arm_played = self.times_played(arm) 
-        if(r_sum == 0 or times_arm_played == 0): return 0
-            
-        return r_sum/times_arm_played
-    
-    def times_played(self, arm):
-        return len([game for game in self.game_list if game[ACTION] == arm])
-
-
+        return self.arm_reward_pairs[arm][CUM_REWARD] / self.arm_reward_pairs[arm][N_K] if self.arm_reward_pairs[arm][N_K] else 0
 
 
     

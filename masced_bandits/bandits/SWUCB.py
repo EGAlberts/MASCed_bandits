@@ -1,8 +1,4 @@
 import numpy as np
-import time
-from random import sample
-from masced_bandits.utilities import save_to_pickle, load_from_pickle, truncate, convert_conf, calculate_utility
-from masced_bandits.bandit_options import bandit_args
 from masced_bandits.bandits.Bandit import Bandit
 from collections import deque
 
@@ -13,18 +9,15 @@ XI = 2
 
 
 class SWUCB(Bandit):
-    def __init__(self, formula):
-        super().__init__("SWUCB-" + formula)
-        #self.look_back = 65
-        self.look_back = int(formula)
+    def __init__(self, **kwargs):
+        super().__init__("SWUCB-" + str(kwargs))
+
+        self.look_back = int(kwargs.get("look_back",10))
 
         self.bandit_round = -1
         self.game_list = deque(maxlen=self.look_back)
-        self.last_action = bandit_args["initial_configuration"]
-        
 
-
-    def start_strategy(self, reward):
+    def get_next_arm(self, reward):
                
         self.game_list.append([reward, self.last_action])
 

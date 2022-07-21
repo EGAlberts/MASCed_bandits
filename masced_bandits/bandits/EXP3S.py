@@ -14,21 +14,19 @@ N_K = 2
 
 
 class EXP3S(Bandit, Expert):
-    def __init__(self, formula): 
-        super().__init__("EXP3S-" + formula)
+    def __init__(self, **kwargs): 
+        super().__init__("EXP3S-" + str(kwargs))
         self.weights, self.distribution = self.exp3s_initialize(len(self.arms))
         self.num_arms = len(self.arms)
 
         #np.random.seed(1337)
-        trace_len = 2000 #the total time of chosen trace in SWIM in seconds
-        total_count = 1000#round(trace_len / 60) 
-        self.gamma = 0.5 #1/total_count
-        self.alpha = 0.0001#min(1, np.sqrt( (self.num_arms * np.log(self.num_arms * total_count)) / total_count))
+        total_count = kwargs["horizon"] 
+        self.gamma = 1/total_count
+        self.alpha = min(1, np.sqrt( (self.num_arms * np.log(self.num_arms * total_count)) / total_count))
         #alpha is the learning rate, the lower it is the harder the probabilities commit. If you set it too high you will get overflowing weights
         #gamma is the discount factor
         #low gamma entails your new reward has slight influence on weights but the weight affects the dsitribution heavily
         #high gamma entails your new reward influences the weights but the weights don't affect the distribution
-        self.last_action = bandit_args["initial_configuration"]
         self.distr_func()
 
         
@@ -39,7 +37,7 @@ class EXP3S(Bandit, Expert):
 
 
 
-    def start_strategy(self, reward):
+    def get_next_arm(self, reward):
         #print("received this " + str(reward))
 
         #print("my distribution is ")
@@ -64,18 +62,6 @@ class EXP3S(Bandit, Expert):
         self.update_func(reward, chosen_action)
 
         self.distr_func()
-
-    def formula_to_function(self, choice):
-        funcs = {
-                "FH": (fixed_horizon_Pt, fixed_horizon_up),
-                "anytime": (anytime_Pt, anytime_up)
-            }
-            
-        func = funcs.get(choice)
-        ##print(func.__doc__)
-        return func
-
-
 
     def distr_func(self):
         # exp(eta * S^_t-1i) / SUMkj=1 exp(eta * S^_t-1j)

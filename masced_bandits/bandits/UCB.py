@@ -1,13 +1,8 @@
-import numpy as np
-import time
-from random import sample
-#from utilities import save_to_pickle, load_from_pickle, truncate, convert_conf, calculate_utility
-from masced_bandits.bandit_options import bandit_args
 from masced_bandits.bandits.Bandit import Bandit
+import numpy as np
 import matplotlib.pyplot as plt
 
 
-#formula = "ao"
 FORMULA_FUNC = None
 
 CUM_REWARD = 0
@@ -24,7 +19,7 @@ DELTA = 1 / np.square(total_count)
 
 class UCB(Bandit):
     def __init__(self, **kwargs):
-        formula = kwargs["formula"]
+        formula = kwargs.get("formula","TN")
         super().__init__("UCB-" + formula)
         self.formula = self.formula_to_function(formula)
         
@@ -32,18 +27,15 @@ class UCB(Bandit):
         self.arm_reward_pairs = {}
         for arm in self.arms: self.arm_reward_pairs[arm] = [0.0,0.0,0.0]
         
-        self.last_action = bandit_args["initial_configuration"]
 
 
         
-    def start_strategy(self, reward):
-        #print("rew is " + str(reward))
+    def get_next_arm(self, reward):
         self.arm_reward_pairs[self.last_action][CUM_REWARD]+=reward
         self.arm_reward_pairs[self.last_action][CUM_SQ_REWARD]+=np.square(reward)
         self.arm_reward_pairs[self.last_action][N_K]+=1
 
-        #print(self.arm_reward_pairs)
-        self.bandit_round = self.bandit_round + 1
+        self.bandit_round+=1
 
         if((self.bandit_round) < (len(self.arms))):    
             next_arm = self.arms[self.bandit_round]
@@ -68,7 +60,7 @@ class UCB(Bandit):
         return func
 
     def reward_average(self, arm):
-        return self.arm_reward_pairs[arm][CUM_REWARD] / self.arm_reward_pairs[arm][N_K]  
+        return self.arm_reward_pairs[arm][CUM_REWARD] / self.arm_reward_pairs[arm][N_K]
 
 
     def chapter7(self, arm, n):
@@ -120,12 +112,12 @@ class UCB(Bandit):
         else:
             return confidence_value
 
-    def visualize(self):
-        times_arms_chosen = [self.arm_reward_pairs[arm][N_K] for arm in self.arms]
-        arm_names = [str(arm) for arm in self.arms]
+    # def visualize(self):
+    #     times_arms_chosen = [self.arm_reward_pairs[arm][N_K] for arm in self.arms]
+    #     arm_names = [str(arm) for arm in self.arms]
 
-        print((len(self.arms), len(times_arms_chosen)))
-        plt.bar(arm_names, times_arms_chosen)
+    #     print((len(self.arms), len(times_arms_chosen)))
+    #     plt.bar(arm_names, times_arms_chosen)
 
-        plt.savefig("testvisualizationofUCB.png")
+    #     plt.savefig("testvisualizationofUCB.png")
 

@@ -9,10 +9,6 @@ class Expert:
         self.distribution = None #should be initialized in subclass
         self.weights = None #should be initialized in subclass
 
-    
-    def say_hi(self):
-        print("Hi i am an abstract expert")
-
     def set_functions(self, formula):
         'implemented in subclass'
         pass

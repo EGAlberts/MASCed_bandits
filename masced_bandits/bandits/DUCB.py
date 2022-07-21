@@ -1,8 +1,5 @@
 import numpy as np
-import time
 from random import sample
-#from utilities import save_to_pickle, load_from_pickle, truncate, convert_conf, calculate_utility
-from masced_bandits.bandit_options import bandit_args
 from masced_bandits.bandits.Bandit import Bandit
 import matplotlib.pyplot as plt
 
@@ -19,39 +16,34 @@ ACTION = 1
 
 class DUCB(Bandit):
     def __init__(self, **kwargs):
-        gamma = float(kwargs["gamma"])
+        gamma = float(kwargs.get("gamma",0.99))
         super().__init__("DUCB-" + str(gamma))
 
         self.discount = gamma
         self.bandit_round = -1
         self.game_list = []
-        self.last_action = bandit_args["initial_configuration"]
-
         
-    def start_strategy(self, reward):
+    def get_next_arm(self, reward):
         self.game_list.append([reward, self.last_action])
 
         self.bandit_round = self.bandit_round + 1
 
         if((self.bandit_round) < (len(self.arms))):
-            #initial exploration    
-            #print("INITIAL EXPLORE: START")  
             next_arm = self.arms[self.bandit_round]
-            #print("INITIAL EXPLORE: CHOSE: " + str(next_arm))  
+
 
         else:
-            scores = [str(self.reward_average(arm)) + " c: " + str(self.tuned(arm, sum([self.times_played(arm) for arm in self.arms]))) for arm in self.arms]
+            #scores = [str(self.reward_average(arm)) + " c: " + str(self.tuned(arm, sum([self.times_played(arm) for arm in self.arms]))) for arm in self.arms]
             #print("Scores were " + str(scores))
             next_arm = max(self.arms, key=lambda arm: \
                        self.reward_average(arm) + self.tuned(arm, sum([self.times_played(arm) for arm in self.arms])))
-            #print("And I picked " + str(next_arm))
+
 
         self.last_action = next_arm
         return next_arm
 
 
     def reward_average(self, arm):
-        #print("Considering arm: " + str(arm))
         r_sum = 0.0
         total_games = len(self.game_list)
 
@@ -90,8 +82,7 @@ class DUCB(Bandit):
 
     def tuned(self, arm, n):
         n_k = self.times_played(arm)
-        #print("times arm played inside tuned " + str(n_k))
-        #print("value of n inside tuned " + str(n))
+
         average_of_squares = self.sqreward_average(arm)
         square_of_average = np.square(self.reward_average(arm))
         estimated_variance = average_of_squares - square_of_average
@@ -106,17 +97,17 @@ class DUCB(Bandit):
             return 0
         else:
             return confidence_value
-    def visualize(self):
-        if((self.bandit_round) < (len(self.arms))): return
-        arm_names = []
-        arm_rewards= []
-        arm_conf = []
-        [(arm_names.append(str(arm)), arm_rewards.append(self.reward_average(arm)), arm_conf.append(self.tuned(arm, sum([self.times_played(arm) for arm in self.arms])))) for arm in self.arms]
-        reward_bar = plt.bar(arm_names, arm_rewards)
-        confidence_bar = plt.bar(arm_names, arm_conf, bottom=arm_rewards)
-        #plt.bar_label(reward_bar, padding=3)
-        #plt.bar_label(confidence_bar, padding=3)
-        plt.yticks(np.arange(1.0,3.00, step=0.05))
-        plt.pause(0.05)
-        plt.cla()
-        plt.draw()
+    # def visualize(self):
+    #     if((self.bandit_round) < (len(self.arms))): return
+    #     arm_names = []
+    #     arm_rewards= []
+    #     arm_conf = []
+    #     [(arm_names.append(str(arm)), arm_rewards.append(self.reward_average(arm)), arm_conf.append(self.tuned(arm, sum([self.times_played(arm) for arm in self.arms])))) for arm in self.arms]
+    #     reward_bar = plt.bar(arm_names, arm_rewards)
+    #     confidence_bar = plt.bar(arm_names, arm_conf, bottom=arm_rewards)
+    #     #plt.bar_label(reward_bar, padding=3)
+    #     #plt.bar_label(confidence_bar, padding=3)
+    #     plt.yticks(np.arange(1.0,3.00, step=0.05))
+    #     plt.pause(0.05)
+    #     plt.cla()
+    #     plt.draw()

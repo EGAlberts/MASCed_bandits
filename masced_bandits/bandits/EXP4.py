@@ -3,7 +3,6 @@ from random import sample
 from masced_bandits.bandits.Expert import Expert
 from masced_bandits.bandits.Bandit import Bandit
 from masced_bandits.bandit_options import bandit_args
-from masced_bandits.utilities import calculate_utility, convert_conf
 from masced_bandits.bandits.EXP3 import EXP3
 from masced_bandits.bandits.EwS import EwS
 ACTION = 0
@@ -12,25 +11,29 @@ N_K = 2
 
 TOTAL_ROUNDS = 1#round(3000 / 60)
 
+"""
+Requires the following arguments:
+learning_rate
+num_experts
+expert
+"""
 class EXP4(Bandit):
-    def __init__(self, formula):
-        super().__init__("EXP4-" + formula)
+    def __init__(self, **kwargs):
+        super().__init__("EXP4-" + str(kwargs))
         
-        self.num_exps = bandit_args["number_of_experts"]
+        self.num_exps = kwargs["num_experts"]
         
-        self.expert = self.expert_to_class(bandit_args["expert"])
+        self.expert = self.expert_to_class(kwargs["expert"])
 
         self.distribution = None
         
-        self.eta = 0.1#np.sqrt( (2 * np.log(self.num_exps)) / (len(self.arms) * TOTAL_ROUNDS))
+        self.eta = float(kwargs["learning_rate"])
 
         self.experts = []
 
         self.knowledge = None
         self.previous_expert = 0 #this can be any expert but needs to be specified.
        
-        self.last_action = bandit_args["initial_configuration"]
-
         self.distribution = [1.0/self.num_exps] * self.num_exps
 
         for i in range(self.num_exps):
@@ -46,14 +49,10 @@ class EXP4(Bandit):
                     exp_instance.weights = bandit_args["expert_preknowledge"][i]
             exp_instance.distr_func()
             self.experts.append(exp_instance)
-        #print("BOO")
-        
+
 
     
-    def start_strategy(self, reward):
-        #print("BAA")
-        #self.expert_status()
-        #print("My distribution is " + str(self.distribution))
+    def get_next_arm(self, reward):
 
         experts_matrix = np.matrix([expert.distribution for expert in self.experts])
         dist_over_arms = self.distribution * experts_matrix

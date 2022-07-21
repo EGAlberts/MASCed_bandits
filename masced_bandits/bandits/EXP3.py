@@ -12,16 +12,13 @@ N_K = 2
 
 #ETA = 1
 
-
-class EXP3(Bandit, Expert):
+#EXP3 a.k.a. SoftMax
+class EXP3(Bandit, Expert): 
     def __init__(self, **kwargs): 
         super().__init__("EXP3-" + str(kwargs))
         self.weights, self.distribution = self.exp3_initialize(len(self.arms))
         self.num_arms = len(self.arms)
  
-        #np.random.seed(1337)
-        trace_len = 20000 #the total time of chosen trace in SWIM in seconds
-        total_count = round(trace_len / 60) 
         if("horizon" in kwargs):
             self.eta = np.sqrt(np.log(len(self.arms)) / (len(self.arms) * int(kwargs["horizon"])) ) #0.1
         elif("learning_rate" in kwargs):
@@ -29,33 +26,20 @@ class EXP3(Bandit, Expert):
         else:
             raise RuntimeError('EXP3 not hyperparamterized')
         
-        self.last_action = bandit_args["initial_configuration"]
         self.distr_func()
 
-        
         
        
     def exp3_initialize(self, num_arms):
         return [0] * num_arms, []
 
     
+    def get_next_arm(self, reward):
 
-
-    def start_strategy(self, reward):
-        #print("received this " + str(reward))
-
-        #print("my distribution is ")
-        #print(self.distribution)    
-        
         self.update_func(reward, self.arms.index(self.last_action)) #Update weights
 
-        ##print("now my weights are")
-        #print(self.weights)
         self.distr_func() #(re-)calculate Pt
         
-        #print("now my distribution is ")
-        #print(self.distribution)     
-
         new_action = self.sample_action()
   
         self.last_action = self.arms[new_action]
@@ -66,17 +50,6 @@ class EXP3(Bandit, Expert):
         self.update_func(reward, chosen_action)
 
         self.distr_func()
-
-    # def formula_to_function(self, choice):
-    #     funcs = {
-    #             "FH": (fixed_horizon_Pt, fixed_horizon_up),
-    #             "anytime": (anytime_Pt, anytime_up)
-    #         }
-            
-    #     func = funcs.get(choice)
-    #     ###print(func.__doc__)
-    #     return func
-
 
 
     def distr_func(self):
