@@ -1,6 +1,5 @@
 from masced_bandits.bandits.Bandit import Bandit
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 FORMULA_FUNC = None
@@ -111,13 +110,4 @@ class UCB(Bandit):
             return 0
         else:
             return confidence_value
-
-    # def visualize(self):
-    #     times_arms_chosen = [self.arm_reward_pairs[arm][N_K] for arm in self.arms]
-    #     arm_names = [str(arm) for arm in self.arms]
-
-    #     print((len(self.arms), len(times_arms_chosen)))
-    #     plt.bar(arm_names, times_arms_chosen)
-
-    #     plt.savefig("testvisualizationofUCB.png")
 
