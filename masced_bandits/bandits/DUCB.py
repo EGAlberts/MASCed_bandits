@@ -1,7 +1,7 @@
 import numpy as np
 from random import sample
 from masced_bandits.bandits.Bandit import Bandit
-import matplotlib.pyplot as plt
+
 
 
 
