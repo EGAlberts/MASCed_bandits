@@ -20,7 +20,7 @@ class EXP3S(Bandit, Expert):
         self.num_arms = len(self.arms)
 
         #np.random.seed(1337)
-        total_count = kwargs["horizon"] 
+        total_count = int(kwargs["horizon"])
         self.gamma = 1/total_count
         self.alpha = min(1, np.sqrt( (self.num_arms * np.log(self.num_arms * total_count)) / total_count))
         #alpha is the learning rate, the lower it is the harder the probabilities commit. If you set it too high you will get overflowing weights

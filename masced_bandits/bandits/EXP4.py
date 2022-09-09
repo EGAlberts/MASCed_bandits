@@ -21,7 +21,7 @@ class EXP4(Bandit):
     def __init__(self, **kwargs):
         super().__init__("EXP4-" + str(kwargs))
         
-        self.num_exps = kwargs["num_experts"]
+        self.num_exps = int(kwargs["num_experts"])
         
         self.expert = self.expert_to_class(kwargs["expert"])
 

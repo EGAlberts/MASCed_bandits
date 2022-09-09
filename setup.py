@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="masced_bandits",
-    version="1.0.0",
+    version="1.0.1",
     author="Elvin Alberts",
     author_email="elvingalberts@gmail.com",
     description="multi-armed bandit policies",
