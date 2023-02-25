@@ -8,6 +8,7 @@ from masced_bandits.bandits.EwS import EwS
 from masced_bandits.bandits.EXP3S import EXP3S
 from masced_bandits.bandits.DUCB import DUCB
 from masced_bandits.bandits.ETC import ETC
+from masced_bandits.bandits.LinUCB import LinUCB
 
 import numpy as np
 
@@ -23,7 +24,8 @@ def init_bandit(**kwargs):
         "EXP3S": EXP3S,
         "EXP4": EXP4,
         "DUCB": DUCB,
-        "ETC": ETC
+        "ETC": ETC,
+        "LinUCB": LinUCB
 
     }.get(kwargs["name"], None)
 
