@@ -27,6 +27,8 @@ class EXP3(Bandit, Expert):
             raise RuntimeError('EXP3 not hyperparamterized')
         
         self.distr_func()
+        #print("set seed")
+        #np.random.seed(1337 * int(kwargs["seed"]))
 
         
        
