@@ -15,6 +15,11 @@ class egreedy(Bandit):
         self.arm_reward_pairs = {}
         for arm in self.arms: self.arm_reward_pairs[arm] = [0.0,0.0]
 
+        seed = int(kwargs.get("seed",None))
+        
+        #np.random.seed(round(self.epsilon * 10) * seed )
+        #input(round(self.epsilon * 10) * int(kwargs["seed"]))
+
     def get_next_arm(self, reward):
         self.arm_reward_pairs[self.last_action][CUM_REWARD]+=reward
         self.arm_reward_pairs[self.last_action][N_K]+=1

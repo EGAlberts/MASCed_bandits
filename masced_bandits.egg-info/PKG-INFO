@@ -1,3 +1,19 @@
+Metadata-Version: 2.1
+Name: masced-bandits
+Version: 1.0.1
+Summary: multi-armed bandit policies
+Home-page: https://github.com/EGAlberts/MASCed_bandits
+Author: Elvin Alberts
+Author-email: elvingalberts@gmail.com
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3.7
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.0
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
 # MASCed_bandits
 This is a library of multi-armed bandit policies.
 As of the most recent version the following policies are included:
@@ -15,3 +31,4 @@ UCB, UCB-Improved, EXP3, EXP3S, EXP4, EwS, ETC, Discounted UCB, Sliding Window U
         arms_chosen = []
         reward = np.random.random()
         arms_chosen.append(ucb_instance.get_next_arm(reward))
+
